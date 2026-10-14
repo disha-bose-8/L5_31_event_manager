@@ -1,8 +1,7 @@
 """manage event creation, guest registration, and event reports"""
 
-import os
-import pickle
-import random
+import json
+import secrets
 from datetime import date
 
 events = {}
@@ -53,21 +52,16 @@ def guest_report(event_name, sort_order="name"):
     return ", ".join(names)
 
 
-def save_events(file_name="events.pkl"):
-    """Save all events to a file."""
-    with open(file_name, "wb") as f:
-        pickle.dump(events, f)
+def save_events(file_name="events.json"):
+    """Save all events to a JSON file."""
+    with open(file_name, "w", encoding="utf-8") as file:
+        json.dump(events, file, indent=4)
 
 
-def load_events(file_name="events.pkl"):
-    """Load events from a file and return them."""
-    with open(file_name, "rb") as f:
-        return pickle.load(f)
-
-
-def print_badges(event_name):
-    """Print badges for the specified event."""
-    os.system("lp badges_" + event_name + ".txt")
+def load_events(file_name="events.json"):
+    """Load events from a JSON file."""
+    with open(file_name, "r", encoding="utf-8") as file:
+        return json.load(file)
 
 
 def main():
@@ -84,7 +78,7 @@ def main():
     print("Tech Meetup guests:", guest_report("Tech Meetup", "name"))
     print("Tech Meetup is", event_status(date(2099, 1, 15)))
     print("Alumni Dinner is", event_status(date(2020, 5, 1)))
-    winner = random.choice(events["Tech Meetup"]["guests"])
+    winner = secrets.choice(events["Tech Meetup"]["guests"])
     print("Lucky draw winner:", winner)
     save_events()
     restored = load_events() # reload to confirm the save worked
